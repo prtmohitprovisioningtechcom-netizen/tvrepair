@@ -87,6 +87,8 @@ export function getPool(): mysql.Pool {
     );
   }
 
+  console.info(`[db] connecting ${user}@${host}:${port}/${database}`);
+
   pool = mysql.createPool({
     host,
     port,
@@ -94,9 +96,11 @@ export function getPool(): mysql.Pool {
     password,
     database,
     waitForConnections: true,
-    connectionLimit: Number(process.env.DB_POOL_SIZE || 10),
+    connectionLimit: Number(process.env.DB_POOL_SIZE || 5),
     queueLimit: 0,
     enableKeepAlive: true,
+    keepAliveInitialDelay: 10000,
+    connectTimeout: Number(process.env.DB_CONNECT_TIMEOUT || 30000),
     charset: "utf8mb4",
     dateStrings: true,
     ssl: sslOption(host, sslParam),
