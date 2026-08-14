@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+export const dynamic = 'force-dynamic';
 import { Header } from "@/components/website/Header";
 import { Footer, MobileCta } from "@/components/website/Footer";
 import { getSiteContext } from "@/server/services/site";
