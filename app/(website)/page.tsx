@@ -7,16 +7,20 @@ import { PageRenderer } from "@/components/website/PageRenderer";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [page, site] = await Promise.all([getHomepage(), getSiteContext()]);
-  if (!page) return { title: "TV Repair" };
-  const seo = await getSeo("homepage", page.id);
-  return buildMetadata({
-    seo,
-    fallbackTitle: page.title,
-    fallbackDescription: page.excerpt || "",
-    path: "/",
-    settings: site.settings,
-  });
+  try {
+    const [page, site] = await Promise.all([getHomepage(), getSiteContext()]);
+    if (!page) return { title: "TV Repair" };
+    const seo = await getSeo("homepage", page.id);
+    return buildMetadata({
+      seo,
+      fallbackTitle: page.title,
+      fallbackDescription: page.excerpt || "",
+      path: "/",
+      settings: site.settings,
+    });
+  } catch {
+    return { title: "TV Repair" };
+  }
 }
 
 export default async function HomePage() {

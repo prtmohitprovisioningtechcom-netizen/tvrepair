@@ -9,6 +9,7 @@ export async function query<T>(sql: string, params: unknown[] = []): Promise<T[]
     const [rows] = await getPool().execute(sql, params as SqlParams);
     return rows as T[];
   } catch (error) {
+    console.error("[db] query failed", error);
     throw new AppError("Database query failed", 500, error);
   }
 }
@@ -29,6 +30,7 @@ export async function execute(
     const [result] = await getPool().execute(sql, params as SqlParams);
     return result as ResultSetHeader;
   } catch (error) {
+    console.error("[db] write failed", error);
     throw new AppError("Database write failed", 500, error);
   }
 }

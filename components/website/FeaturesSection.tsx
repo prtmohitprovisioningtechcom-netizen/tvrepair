@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { BadgeCheck, Cpu, MapPinned } from "lucide-react";
+import { CmsImage } from "@/components/website/CmsImage";
 import { resolveWorkImage } from "@/lib/site-images";
 
 const ICONS = [Cpu, BadgeCheck, MapPinned];
@@ -90,10 +90,9 @@ export function FeaturesSection({
               >
                 <div className="relative aspect-4/3 overflow-hidden bg-navy-2">
                   {photo ? (
-                    <Image
+                    <CmsImage
                       src={photo}
                       alt=""
-                      fill
                       className="object-cover transition duration-700 group-hover:scale-105"
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                     />

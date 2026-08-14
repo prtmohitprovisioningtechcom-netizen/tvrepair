@@ -1,5 +1,4 @@
 import { Fragment } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, Phone, ShieldCheck } from "lucide-react";
 import type { PageSection } from "@/models";
@@ -18,6 +17,7 @@ import { phoneHref } from "@/lib/utils/cn";
 import { sanitizeHtml } from "@/lib/utils/sanitize";
 import { resolveWorkImage } from "@/lib/site-images";
 import { applySettingsTokens } from "@/lib/site-settings";
+import { CmsImage } from "@/components/website/CmsImage";
 
 export interface RendererExtras {
   services: Service[];
@@ -90,7 +90,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
           </div>
           {image ? (
             <div className="relative aspect-16/10 overflow-hidden rounded-2xl sm:aspect-4/3">
-              <Image src={image} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" priority />
+              <CmsImage src={image} alt="" sizes="(max-width: 768px) 100vw, 50vw" priority />
               <div className="absolute inset-0 bg-linear-to-t from-navy/40 to-transparent" />
             </div>
           ) : null}
@@ -135,7 +135,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
             <Reveal from="left" className="relative min-w-0 overflow-hidden md:overflow-visible">
               <div className="absolute -bottom-3 -right-3 hidden h-full w-full rounded-2xl bg-copper/20 md:block" />
               <div className="relative aspect-5/4 overflow-hidden rounded-2xl">
-                <Image src={image} alt={str("heading")} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
+                <CmsImage src={image} alt={str("heading")} sizes="(max-width: 1024px) 100vw, 50vw" />
               </div>
             </Reveal>
           ) : null}
@@ -202,7 +202,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
     const image = img("image");
     return (
       <section className="relative overflow-hidden bg-navy py-8 text-white sm:py-16 lg:py-20">
-        {image ? <Image src={image} alt="" fill className="object-cover opacity-35" sizes="100vw" /> : null}
+        {image ? <CmsImage src={image} alt="" className="object-cover opacity-35" sizes="100vw" /> : null}
         <div className={`absolute inset-0 ${image ? "bg-navy/70" : ""}`} />
         <div className={`container-wide relative grid min-w-0 items-center gap-8 lg:grid-cols-[1.2fr_0.8fr] ${align || ""}`}>
           <Reveal className="min-w-0">
@@ -261,7 +261,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
           <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {images.map((src) => (
               <div key={src} className="relative aspect-4/3 overflow-hidden rounded-2xl">
-                <Image src={resolveWorkImage(src)} alt="" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 33vw" />
+                <CmsImage src={src} alt="" sizes="(max-width: 1024px) 100vw, 33vw" />
               </div>
             ))}
           </div>
@@ -324,12 +324,12 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
         <div className="container-wide grid gap-6 lg:grid-cols-2">
           {beforeImage ? (
             <div className="relative aspect-4/3 overflow-hidden rounded-xl">
-              <Image src={beforeImage} alt="Before" fill className="object-cover" />
+              <CmsImage src={beforeImage} alt="Before" />
             </div>
           ) : null}
           {afterImage ? (
             <div className="relative aspect-4/3 overflow-hidden rounded-xl">
-              <Image src={afterImage} alt="After" fill className="object-cover" />
+              <CmsImage src={afterImage} alt="After" />
             </div>
           ) : null}
         </div>
