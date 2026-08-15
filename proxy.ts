@@ -2,12 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 import { SESSION_COOKIE } from "@/lib/auth/constants";
-
-function secretKey() {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) return null;
-  return new TextEncoder().encode(secret);
-}
+import { authSecretOrNull } from "@/lib/auth/secret";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -27,7 +22,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(login);
   }
 
-  const key = secretKey();
+  const key = authSecretOrNull();
   if (!key) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }

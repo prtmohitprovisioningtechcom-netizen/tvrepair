@@ -20,7 +20,11 @@ export function handleApiError(error: unknown) {
     return jsonError(error.message, error.status, error.details);
   }
   console.error(error);
-  return jsonError("Internal server error", 500);
+  const message =
+    error instanceof Error && error.message
+      ? error.message
+      : "Internal server error";
+  return jsonError(message, 500);
 }
 
 export async function requireAdmin(): Promise<SessionUser> {

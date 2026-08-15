@@ -1,10 +1,10 @@
-import { handleApiError, jsonOk } from "@/lib/auth/api";
-import { clearSessionCookie } from "@/lib/auth/session";
+import { NextResponse } from "next/server";
+import { handleApiError } from "@/lib/auth/api";
+import { applyClearedSessionCookie } from "@/lib/auth/session";
 
 export async function POST() {
   try {
-    await clearSessionCookie();
-    return jsonOk({ ok: true });
+    return applyClearedSessionCookie(NextResponse.json({ ok: true }));
   } catch (error) {
     return handleApiError(error);
   }
