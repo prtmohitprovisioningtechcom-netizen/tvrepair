@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { BadgeCheck, ChevronLeft, ChevronRight, MapPin, Star } from "lucide-react";
 import type { Testimonial } from "@/models";
 import { Reveal } from "@/components/website/Reveal";
 import { SITE_IMAGES, resolveWorkImage } from "@/lib/site-images";
+import { CmsImage } from "@/components/website/CmsImage";
 
 const AVATARS = ["bg-navy", "bg-copper", "bg-navy-3", "bg-copper-dark"];
 const TV_SCENES = [
@@ -89,14 +89,7 @@ export function TestimonialsSection({
           <div className="rounded-[1.6rem] bg-navy p-2 shadow-[0_30px_60px_-28px_rgba(8,21,37,0.7)] sm:p-2.5">
             <div className="overflow-hidden rounded-[1.15rem] bg-navy-2">
               <div className="relative aspect-16/10">
-                <Image
-                  key={photo + item.id}
-                  src={photo}
-                  alt=""
-                  fill
-                  className="review-fade object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
+                <CmsImage key={photo + item.id} src={photo} alt="" className="review-fade object-cover" />
                 <div className="absolute inset-0 bg-navy/20 sm:bg-linear-to-t sm:from-navy sm:via-navy/50 sm:to-navy/10" />
                 <p className="absolute left-3 top-3 rounded-full bg-navy/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white sm:left-4 sm:top-4">
                   Live · Channel {String(active + 1).padStart(2, "0")}

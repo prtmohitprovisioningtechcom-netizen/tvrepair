@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { CmsImage } from "@/components/website/CmsImage";
+import { servicePhoto } from "@/lib/site-images";
 
 export function ServiceCard({
   name,
@@ -20,7 +21,7 @@ export function ServiceCard({
     >
       <span className="relative aspect-4/3 overflow-hidden sm:aspect-16/10">
         <CmsImage
-          src={image}
+          src={image || servicePhoto(slug)}
           alt={name}
           className="object-cover transition duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"

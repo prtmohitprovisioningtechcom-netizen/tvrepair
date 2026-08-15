@@ -16,10 +16,9 @@ export function slugify(value: string): string {
 }
 
 export function siteUrl(path = ""): string {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(
-    /\/$/,
-    "",
-  );
+  let base = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").trim();
+  if (base && !/^https?:\/\//i.test(base)) base = `https://${base}`;
+  base = base.replace(/\/$/, "") || "http://localhost:3000";
   if (!path) return base;
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }

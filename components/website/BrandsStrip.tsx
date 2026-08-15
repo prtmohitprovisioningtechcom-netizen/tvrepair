@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import { Reveal } from "@/components/website/Reveal";
 import { SITE_IMAGES } from "@/lib/site-images";
+import { CmsImage } from "@/components/website/CmsImage";
 
 const BRAND_NOTES: Record<string, { hue: string; note: string }> = {
   samsung: { hue: "from-[#0b1f6b] to-[#1c4ed8]", note: "QLED backlight, T-con and Smart Hub" },
@@ -57,13 +57,7 @@ export function BrandsStrip({
         <Reveal delay={90} className="mx-auto w-full max-w-lg">
           <div className="rounded-[1.7rem] bg-navy p-2 shadow-[0_30px_60px_-28px_rgba(8,21,37,0.7)] sm:p-2.5">
             <div className="relative overflow-hidden rounded-[1.2rem] bg-[#0c1220]">
-              <Image
-                src={SITE_IMAGES.watching}
-                alt=""
-                fill
-                className="object-cover opacity-45"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-              />
+              <CmsImage src={SITE_IMAGES.watching} alt="" className="object-cover opacity-45" />
               <div className="absolute inset-0 bg-navy/55" />
               <div className="relative">
               <div className="flex items-center justify-between px-3 py-3 text-[11px] uppercase tracking-[0.14em] text-white/70 sm:px-4">

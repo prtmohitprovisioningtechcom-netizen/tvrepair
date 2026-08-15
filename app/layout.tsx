@@ -5,6 +5,7 @@ import "./globals.css";
 import { getSettingsMap } from "@/server/repositories/settings.repository";
 import { ToastViewport } from "@/components/shared/ToastViewport";
 import { BookingModal } from "@/components/website/BookingModal";
+import { siteUrl } from "@/lib/utils/cn";
 
 const display = Sora({
   variable: "--font-display",
@@ -29,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   try {
     const settings = await getSettingsMap();
     return {
-      metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+      metadataBase: new URL(siteUrl()),
       title: {
         default: settings["seo.default_title"] || settings["business.name"] || "TV Repair",
         template: `%s | ${settings["business.name"] || "TV Repair"}`,

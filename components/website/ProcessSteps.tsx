@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { CalendarCheck, Home, Microscope, ShieldCheck } from "lucide-react";
 import { SITE_IMAGES } from "@/lib/site-images";
+import { CmsImage } from "@/components/website/CmsImage";
 
 const STEPS = [
   {
@@ -45,12 +45,10 @@ export function ProcessSteps() {
             return (
               <article key={step.n} className="group overflow-hidden rounded-2xl border border-line bg-paper">
                 <div className="relative aspect-video overflow-hidden sm:aspect-4/3">
-                  <Image
+                  <CmsImage
                     src={step.image}
                     alt={step.title}
-                    fill
                     className="object-cover transition duration-500 group-hover:scale-105"
-                    sizes="(max-width: 1024px) 50vw, 25vw"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-navy/80 via-navy/10 to-transparent" />
                   <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 font-display text-xs text-navy">

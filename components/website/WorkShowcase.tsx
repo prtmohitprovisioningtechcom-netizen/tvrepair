@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { WORK_SHOTS } from "@/lib/site-images";
+import { CmsImage } from "@/components/website/CmsImage";
 
 export function WorkShowcase() {
   return (
@@ -18,12 +18,10 @@ export function WorkShowcase() {
                 key={shot.label}
                 className={`group relative overflow-hidden rounded-xl sm:rounded-2xl ${wide ? "col-span-2 min-h-36 sm:min-h-56 lg:min-h-72" : "min-h-28 sm:min-h-44 lg:min-h-72"}`}
               >
-                <Image
+                <CmsImage
                   src={shot.src}
                   alt={shot.label}
-                  fill
                   className="object-cover transition duration-700 group-hover:scale-105"
-                  sizes={wide ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 1024px) 50vw, 25vw"}
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-navy via-navy/20 to-transparent" />
                 <figcaption className="absolute inset-x-0 bottom-0 p-3 sm:p-4 lg:p-5">

@@ -1,117 +1,163 @@
 import mysql from "mysql2/promise";
 
-let pool: mysql.Pool | null = null;
+type DbConfig = {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
+  sslParam: string | null;
+};
 
-function azureConnStr() {
-  const raw =
-    process.env.MYSQLCONNSTR_localdb ||
-    process.env.MYSQLCONNSTR_default ||
-    process.env.CUSTOMCONNSTR_MYSQL ||
-    "";
-  if (!raw.includes("=") || !raw.includes(";")) return null;
-  const parts: Record<string, string> = {};
-  for (const piece of raw.split(";")) {
-    const idx = piece.indexOf("=");
-    if (idx === -1) continue;
-    parts[piece.slice(0, idx).trim().toLowerCase()] = piece.slice(idx + 1).trim();
-  }
-  const host = parts["data source"] || parts["server"] || parts["host"];
-  const user = parts["user id"] || parts["userid"] || parts["uid"] || parts["user"];
-  const database = parts["database"] || parts["initial catalog"];
-  if (!host || !user || !database) return null;
-  return {
-    host,
-    port: Number(parts["port"] || 3306),
-    user,
-    password: parts["password"] || parts["pwd"] || "",
-    database,
-  };
+let pool: mysql.Pool | null = null;
+let poolPromise: Promise<mysql.Pool> | null = null;
+
+function env(name: string, fallback = "") {
+  const value = process.env[name];
+  if (value == null) return fallback;
+  return value.trim().replace(/^['"]|['"]$/g, "");
 }
 
-function fromDatabaseUrl(url: string) {
+function fromDatabaseUrl(url: string): DbConfig {
   const parsed = new URL(url);
-  const database = decodeURIComponent(parsed.pathname.replace(/^\//, "").split("/")[0] || "");
   return {
     host: parsed.hostname,
     port: Number(parsed.port || 3306),
     user: decodeURIComponent(parsed.username),
     password: decodeURIComponent(parsed.password),
-    database,
+    database: decodeURIComponent(parsed.pathname.replace(/^\//, "").split("/")[0] || ""),
     sslParam: parsed.searchParams.get("ssl") || parsed.searchParams.get("sslmode"),
   };
 }
 
+function readConfig(): DbConfig {
+  const host = env("DB_HOST");
+  const user = env("DB_USER");
+  const database = env("DB_NAME");
+  if (host && user && database) {
+    return {
+      host,
+      port: Number(env("DB_PORT", "3306") || 3306),
+      user,
+      password: env("DB_PASSWORD"),
+      database,
+      sslParam: env("DB_SSL") || null,
+    };
+  }
+
+  const url = env("DATABASE_URL");
+  if (url) return fromDatabaseUrl(url);
+
+  throw new Error("Set DB_HOST, DB_USER, DB_NAME and DB_PASSWORD (or DATABASE_URL).");
+}
+
 function sslOption(host: string, sslParam?: string | null) {
-  const flag = (process.env.DB_SSL || "").toLowerCase();
+  const flag = env("DB_SSL").toLowerCase();
   const azure = /\.database\.azure\.com$/i.test(host);
   const fromUrl = sslParam === "true" || sslParam === "required" || sslParam === "require";
   if (flag === "false" || flag === "0") return undefined;
   if (!(flag === "true" || flag === "1" || flag === "required" || azure || fromUrl)) return undefined;
   return {
-    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== "false" && !azure,
+    rejectUnauthorized: env("DB_SSL_REJECT_UNAUTHORIZED") !== "false" && !azure,
   };
 }
 
-export function getPool(): mysql.Pool {
-  if (pool) return pool;
+function hostCandidates(primary: string) {
+  const fallback = env("DB_HOST_FALLBACK");
+  const production = process.env.NODE_ENV === "production";
+  const list = production
+    ? ["localhost", "127.0.0.1", primary, fallback]
+    : [primary, "localhost", "127.0.0.1", fallback];
+  return [...new Set(list.filter(Boolean))];
+}
 
-  let host = process.env.DB_HOST || "";
-  let port = Number(process.env.DB_PORT || 3306);
-  let user = process.env.DB_USER || "";
-  let password = process.env.DB_PASSWORD || "";
-  let database = process.env.DB_NAME || "";
-  let sslParam: string | null = null;
-
-  if (process.env.DATABASE_URL) {
-    const parsed = fromDatabaseUrl(process.env.DATABASE_URL);
-    host = parsed.host;
-    port = parsed.port;
-    user = parsed.user;
-    password = parsed.password;
-    database = parsed.database;
-    sslParam = parsed.sslParam;
-  } else {
-    const azure = azureConnStr();
-    if (azure) {
-      host = azure.host;
-      port = azure.port;
-      user = azure.user;
-      password = azure.password;
-      database = azure.database;
-    }
-  }
-
-  if (!host || !user || !database) {
-    throw new Error(
-      "Database environment variables are missing. Set DATABASE_URL, or DB_HOST, DB_USER, and DB_NAME.",
-    );
-  }
-
-  console.info(`[db] connecting ${user}@${host}:${port}/${database}`);
-
-  pool = mysql.createPool({
+function poolOptions(config: DbConfig, host: string): mysql.PoolOptions {
+  return {
     host,
-    port,
-    user,
-    password,
-    database,
+    port: config.port,
+    user: config.user,
+    password: config.password,
+    database: config.database,
     waitForConnections: true,
-    connectionLimit: Number(process.env.DB_POOL_SIZE || 5),
+    connectionLimit: Number(env("DB_POOL_SIZE", "3") || 3),
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
-    connectTimeout: Number(process.env.DB_CONNECT_TIMEOUT || 30000),
+    connectTimeout: Number(env("DB_CONNECT_TIMEOUT", "30000") || 30000),
     charset: "utf8mb4",
     dateStrings: true,
-    ssl: sslOption(host, sslParam),
-  });
-
-  return pool;
+    ssl: sslOption(host, config.sslParam),
+  };
 }
 
-export async function closePool(): Promise<void> {
-  if (pool) {
-    await pool.end();
-    pool = null;
+async function tryHost(config: DbConfig, host: string, timeout: number) {
+  const conn = await mysql.createConnection({
+    ...poolOptions(config, host),
+    connectTimeout: timeout,
+  });
+  try {
+    await conn.query("SELECT 1");
+  } finally {
+    await conn.end();
   }
+}
+
+async function createWorkingPool(): Promise<mysql.Pool> {
+  const config = readConfig();
+  const hosts = hostCandidates(config.host);
+  let lastError: unknown;
+
+  for (const [index, host] of hosts.entries()) {
+    const timeout = index === 0 || host === config.host ? Number(env("DB_CONNECT_TIMEOUT", "30000") || 30000) : 2500;
+    try {
+      await tryHost(config, host, timeout);
+      console.info(`[db] connected ${config.user}@${host}:${config.port}/${config.database}`);
+      return mysql.createPool(poolOptions(config, host));
+    } catch (error) {
+      lastError = error;
+      const mysqlError = error as { code?: string; message?: string };
+      console.error(`[db] ${host} failed:`, mysqlError.code || mysqlError.message);
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("Could not connect to MySQL. Check DB_HOST / DB_USER / DB_NAME / DB_PASSWORD.");
+}
+
+export async function getPool(): Promise<mysql.Pool> {
+  if (pool) return pool;
+  if (!poolPromise) {
+    poolPromise = createWorkingPool()
+      .then((created) => {
+        pool = created;
+        return created;
+      })
+      .catch((error) => {
+        poolPromise = null;
+        throw error;
+      });
+  }
+  return poolPromise;
+}
+
+export async function resetPool(): Promise<void> {
+  poolPromise = null;
+  if (pool) {
+    const current = pool;
+    pool = null;
+    await current.end().catch(() => undefined);
+  }
+}
+
+export function isDbConnectionError(error: unknown) {
+  const code = (error as { code?: string })?.code || "";
+  return [
+    "ECONNRESET",
+    "ECONNREFUSED",
+    "ETIMEDOUT",
+    "PROTOCOL_CONNECTION_LOST",
+    "PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR",
+    "ER_CON_COUNT_ERROR",
+  ].includes(code);
 }

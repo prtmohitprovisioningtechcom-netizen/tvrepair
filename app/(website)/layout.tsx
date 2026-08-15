@@ -8,8 +8,24 @@ import { localBusinessSchema, websiteSchema } from "@/lib/seo/schema";
 
 export const dynamic = "force-dynamic";
 
+const emptySite = {
+  settings: {},
+  header: null,
+  footer: null,
+  footerLegal: null,
+  services: [],
+  faqs: [],
+  testimonials: [],
+};
+
 export default async function WebsiteLayout({ children }: { children: ReactNode }) {
-  const site = await getSiteContext();
+  let site = emptySite;
+  try {
+    site = await getSiteContext();
+  } catch (error) {
+    console.error("[site] layout database error", error);
+  }
+
   return (
     <SiteProvider settings={site.settings}>
       <JsonLd data={localBusinessSchema(site.settings)} />

@@ -1,22 +1,37 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
-import { getPool } from "@/lib/db/pool";
+import { getPool, isDbConnectionError, resetPool } from "@/lib/db/pool";
 import { AppError } from "@/lib/utils/errors";
 
 type SqlParams = Array<string | number | boolean | Date | Buffer | null>;
 
-export async function query<T>(sql: string, params: unknown[] = []): Promise<T[]> {
+function dbMessage(error: unknown) {
+  const mysqlError = error as { code?: string; sqlMessage?: string; message?: string };
+  return mysqlError.sqlMessage || mysqlError.code || mysqlError.message || "Database query failed";
+}
+
+async function run<T>(work: (pool: Awaited<ReturnType<typeof getPool>>) => Promise<T>): Promise<T> {
   try {
-    const [rows] = await getPool().execute(sql, params as SqlParams);
-    return rows as T[];
+    return await work(await getPool());
   } catch (error) {
-    const mysqlError = error as { code?: string; sqlMessage?: string };
-    console.error("[db] query failed", mysqlError.code || "", mysqlError.sqlMessage || error);
-    throw new AppError(
-      mysqlError.sqlMessage || mysqlError.code || "Database query failed",
-      500,
-      error,
-    );
+    if (isDbConnectionError(error)) {
+      await resetPool();
+      try {
+        return await work(await getPool());
+      } catch (retryError) {
+        console.error("[db] retry failed", dbMessage(retryError));
+        throw new AppError(dbMessage(retryError), 500, retryError);
+      }
+    }
+    console.error("[db] query failed", dbMessage(error));
+    throw new AppError(dbMessage(error), 500, error);
   }
+}
+
+export async function query<T>(sql: string, params: unknown[] = []): Promise<T[]> {
+  return run(async (pool) => {
+    const [rows] = await pool.execute(sql, params as SqlParams);
+    return rows as T[];
+  });
 }
 
 export async function queryOne<T>(
@@ -31,13 +46,10 @@ export async function execute(
   sql: string,
   params: unknown[] = [],
 ): Promise<ResultSetHeader> {
-  try {
-    const [result] = await getPool().execute(sql, params as SqlParams);
+  return run(async (pool) => {
+    const [result] = await pool.execute(sql, params as SqlParams);
     return result as ResultSetHeader;
-  } catch (error) {
-    console.error("[db] write failed", error);
-    throw new AppError("Database write failed", 500, error);
-  }
+  });
 }
 
 export async function insertId(
@@ -54,7 +66,8 @@ export async function transaction<T>(
     execute: (sql: string, params?: unknown[]) => Promise<ResultSetHeader>;
   }) => Promise<T>,
 ): Promise<T> {
-  const conn = await getPool().getConnection();
+  const pool = await getPool();
+  const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
     const wrapped = {

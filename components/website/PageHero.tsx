@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { resolveWorkImage } from "@/lib/site-images";
+import { CmsImage } from "@/components/website/CmsImage";
 
 export function PageHero({
   eyebrow,
@@ -16,7 +16,7 @@ export function PageHero({
   return (
     <section className="relative isolate overflow-hidden bg-navy text-white">
       {photo ? (
-        <Image src={photo} alt="" fill className="-z-10 hidden object-cover lg:block" sizes="100vw" />
+        <CmsImage src={photo} alt="" className="-z-10 hidden object-cover lg:block" priority />
       ) : null}
       <div className="page-hero-mesh pointer-events-none absolute inset-0" />
       {photo ? <div className="hero-photo-shade pointer-events-none absolute inset-0 hidden lg:block" /> : null}

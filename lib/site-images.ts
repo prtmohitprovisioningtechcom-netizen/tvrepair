@@ -58,9 +58,17 @@ const UNSPLASH_LOCAL: Record<string, string> = {
 
 export function resolveWorkImage(src?: string | null) {
   if (!src) return "";
-  if (!src.includes("unsplash.com") && !src.includes("plus.unsplash.com")) return src;
+  let value = src.trim();
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(value)) {
+    try {
+      value = new URL(value).pathname;
+    } catch {
+      value = value.replace(/^https?:\/\/[^/]+/i, "");
+    }
+  }
+  if (!value.includes("unsplash.com") && !value.includes("plus.unsplash.com")) return value;
   for (const [id, local] of Object.entries(UNSPLASH_LOCAL)) {
-    if (src.includes(id)) return local;
+    if (value.includes(id)) return local;
   }
   return SITE_IMAGES.hero;
 }
