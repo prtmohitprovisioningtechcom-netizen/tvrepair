@@ -73,6 +73,10 @@ export function resolveWorkImage(src?: string | null) {
   return SITE_IMAGES.hero;
 }
 
+export function resolveSiteIcon(settings: Record<string, string | undefined>) {
+  return resolveWorkImage(settings["business.logo"] || settings["business.favicon"] || "");
+}
+
 export const WORK_SHOTS = [
   { src: SITE_IMAGES.watching, label: "At your home", caption: "Doorstep diagnosis across Delhi NCR" },
   { src: SITE_IMAGES.screen, label: "Panel check", caption: "Lines, dim picture, no display" },

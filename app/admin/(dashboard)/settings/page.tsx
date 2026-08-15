@@ -104,9 +104,9 @@ export default function SettingsPage() {
         />
         <ImageField
           label="Browser tab icon"
-          hint="Small icon in the browser tab."
+          hint="Optional. Leave empty to use the Logo in the browser tab."
           size="square"
-          url={settings["business.favicon"] || null}
+          url={settings["business.favicon"] || settings["business.logo"] || null}
           onChange={(next) => setImage("business.favicon", next?.url)}
         />
         <ImageField
