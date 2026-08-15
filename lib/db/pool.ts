@@ -81,18 +81,18 @@ function poolOptions(config: DbConfig, host: string): mysql.PoolOptions {
     password: config.password,
     database: config.database,
     waitForConnections: true,
-    connectionLimit: Number(env("DB_POOL_SIZE", "3") || 3),
+    connectionLimit: Number(env("DB_POOL_SIZE", process.env.VERCEL ? "1" : "3") || 3),
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
-    connectTimeout: Number(env("DB_CONNECT_TIMEOUT", "30000") || 30000),
+    connectTimeout: Number(env("DB_CONNECT_TIMEOUT", process.env.VERCEL ? "8000" : "30000") || 30000),
+    idleTimeout: 10000,
     charset: "utf8mb4",
     dateStrings: true,
     ssl: sslOption(host, config.sslParam),
-    // utf8mb4 must not decode image bytes or webp/jpeg reads throw on Vercel
+    // Only the photo blob — TEXT columns must stay strings or the live site crashes
     typeCast(field, next) {
-      const type = String(field.type || "");
-      if (field.name === "file_data" || /BLOB/i.test(type)) {
+      if (field.name === "file_data") {
         return field.buffer();
       }
       return next();
@@ -100,31 +100,25 @@ function poolOptions(config: DbConfig, host: string): mysql.PoolOptions {
   };
 }
 
-async function tryHost(config: DbConfig, host: string, timeout: number) {
-  const conn = await mysql.createConnection({
-    ...poolOptions(config, host),
-    connectTimeout: timeout,
-  });
-  try {
-    await conn.query("SELECT 1");
-  } finally {
-    await conn.end();
-  }
-}
-
 async function createWorkingPool(): Promise<mysql.Pool> {
   const config = readConfig();
   const hosts = hostCandidates(config.host);
   let lastError: unknown;
 
-  for (const [index, host] of hosts.entries()) {
-    const timeout = index === 0 || host === config.host ? Number(env("DB_CONNECT_TIMEOUT", "30000") || 30000) : 2500;
+  for (const host of hosts) {
+    const created = mysql.createPool(poolOptions(config, host));
     try {
-      await tryHost(config, host, timeout);
+      const conn = await created.getConnection();
+      try {
+        await conn.query("SELECT 1");
+      } finally {
+        conn.release();
+      }
       console.info(`[db] connected ${config.user}@${host}:${config.port}/${config.database}`);
-      return mysql.createPool(poolOptions(config, host));
+      return created;
     } catch (error) {
       lastError = error;
+      await created.end().catch(() => undefined);
       const mysqlError = error as { code?: string; message?: string };
       console.error(`[db] ${host} failed:`, mysqlError.code || mysqlError.message);
     }
@@ -166,7 +160,9 @@ export function isDbConnectionError(error: unknown) {
     "ECONNRESET",
     "ECONNREFUSED",
     "ETIMEDOUT",
+    "EPIPE",
     "PROTOCOL_CONNECTION_LOST",
+    "PROTOCOL_SEQUENCE_TIMEOUT",
     "PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR",
     "ER_CON_COUNT_ERROR",
   ].includes(code);

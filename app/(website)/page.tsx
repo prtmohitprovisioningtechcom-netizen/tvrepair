@@ -24,7 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [page, site] = await Promise.all([getHomepage(), getSiteContext()]);
-  if (!page) notFound();
-  return <PageRenderer sections={page.sections} extras={site} />;
+  const site = await getSiteContext();
+  try {
+    const page = await getHomepage();
+    if (!page) notFound();
+    return <PageRenderer sections={page.sections} extras={site} />;
+  } catch (error) {
+    console.error("[home]", error);
+    return <PageRenderer sections={[]} extras={site} />;
+  }
 }
