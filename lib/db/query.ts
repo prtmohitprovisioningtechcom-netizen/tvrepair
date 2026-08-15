@@ -34,6 +34,22 @@ export async function query<T>(sql: string, params: unknown[] = []): Promise<T[]
   });
 }
 
+/** Use for BLOB reads — prepared statements can fail on LONGBLOB. */
+export async function queryText<T>(sql: string, params: unknown[] = []): Promise<T[]> {
+  return run(async (pool) => {
+    const [rows] = await pool.query(sql, params as SqlParams);
+    return rows as T[];
+  });
+}
+
+export async function queryTextOne<T>(
+  sql: string,
+  params: unknown[] = [],
+): Promise<T | null> {
+  const rows = await queryText<T>(sql, params);
+  return rows[0] ?? null;
+}
+
 export async function queryOne<T>(
   sql: string,
   params: unknown[] = [],

@@ -89,6 +89,14 @@ function poolOptions(config: DbConfig, host: string): mysql.PoolOptions {
     charset: "utf8mb4",
     dateStrings: true,
     ssl: sslOption(host, config.sslParam),
+    // utf8mb4 must not decode image bytes or webp/jpeg reads throw on Vercel
+    typeCast(field, next) {
+      const type = String(field.type || "");
+      if (field.name === "file_data" || /BLOB/i.test(type)) {
+        return field.buffer();
+      }
+      return next();
+    },
   };
 }
 

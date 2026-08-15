@@ -1,6 +1,6 @@
 import { mkdir, readFile, unlink, writeFile } from "fs/promises";
 import path from "path";
-import { execute, query, queryOne } from "@/lib/db/query";
+import { execute, query, queryTextOne } from "@/lib/db/query";
 
 let ensureColumn: Promise<void> | null = null;
 
@@ -42,8 +42,18 @@ export async function tryDeletePublicUpload(relativePath: string) {
 
 function toBuffer(value: unknown): Buffer | null {
   if (value == null) return null;
-  if (Buffer.isBuffer(value)) return value;
+  if (Buffer.isBuffer(value)) return Buffer.from(value);
   if (value instanceof Uint8Array) return Buffer.from(value);
+  if (typeof value === "string" && value.length) return Buffer.from(value, "latin1");
+  if (Array.isArray(value)) return Buffer.from(value);
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    "data" in value &&
+    Array.isArray((value as { data: unknown }).data)
+  ) {
+    return Buffer.from((value as { data: number[] }).data);
+  }
   return null;
 }
 
@@ -51,15 +61,61 @@ function normalizeUploadPath(value: string) {
   return value.replace(/^\/+/, "").replace(/\\/g, "/");
 }
 
+export function copyImageBytes(data: Buffer) {
+  const bytes = new Uint8Array(data.length);
+  bytes.set(data);
+  return bytes;
+}
+
+function segmentsOf(value: string[] | string | undefined) {
+  if (Array.isArray(value)) return value;
+  if (!value) return [];
+  return String(value).split("/").filter(Boolean);
+}
+
+export async function mediaFileResponse(rawPath: string[] | string | undefined) {
+  const segments = segmentsOf(rawPath);
+  if (!segments.length || segments.some((part) => part === ".." || part.includes("\0"))) {
+    return new Response("Not found", { status: 404 });
+  }
+
+  const file = await getMediaFile(`uploads/${segments.join("/")}`);
+  if (!file?.data?.length) {
+    return new Response("Not found", { status: 404 });
+  }
+
+  const body = copyImageBytes(file.data);
+  return new Response(body, {
+    status: 200,
+    headers: {
+      "Content-Type": file.mimeType || "application/octet-stream",
+      "Content-Length": String(body.byteLength),
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
+  });
+}
+
 export async function getMediaFile(requestPath: string) {
   const relative = normalizeUploadPath(requestPath);
-  const row = await queryOne<{ mime_type: string; file_data: unknown; path: string }>(
-    `SELECT path, mime_type, file_data FROM media WHERE path = ? OR url = ? LIMIT 1`,
-    [relative, `/${relative}`],
-  );
-  const fromDb = toBuffer(row?.file_data);
-  if (fromDb && row) {
-    return { mimeType: row.mime_type, data: fromDb };
+  const filename = relative.split("/").pop() || relative;
+
+  try {
+    const row = await queryTextOne<{ mime_type: string; file_data: unknown; path: string }>(
+      `SELECT path, mime_type, file_data FROM media
+       WHERE path = ? OR url = ? OR filename = ?
+       LIMIT 1`,
+      [relative, `/${relative}`, filename],
+    );
+    const fromDb = toBuffer(row?.file_data);
+    if (fromDb?.length && row) {
+      return { mimeType: row.mime_type || guessMime(relative), data: fromDb };
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (!/file_data|Unknown column/i.test(message)) {
+      throw error;
+    }
+    console.error("[media] file_data column missing or unreadable", message);
   }
 
   const diskPath = path.resolve(process.cwd(), "public", relative);
@@ -67,7 +123,7 @@ export async function getMediaFile(requestPath: string) {
   if (!diskPath.startsWith(root)) return null;
   try {
     const data = await readFile(diskPath);
-    return { mimeType: row?.mime_type || guessMime(diskPath), data };
+    return { mimeType: guessMime(diskPath), data };
   } catch {
     return null;
   }

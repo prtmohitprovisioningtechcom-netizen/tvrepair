@@ -9,6 +9,13 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/uploads/:path*", destination: "/api/media/file/:path*" },
+      ],
+    };
+  },
 };
 
 export default nextConfig;
