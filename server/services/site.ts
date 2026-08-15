@@ -3,7 +3,7 @@ import { getSettingsMap } from "@/server/repositories/settings.repository";
 import { getMenuByLocation } from "@/server/repositories/content.repository";
 import { getPublishedServices } from "@/server/repositories/services.repository";
 import { getActiveFaqs, listTestimonials } from "@/server/repositories/content.repository";
-import type { Faq, Menu, Service, Testimonial } from "@/models";
+import type { Faq, Menu, Service } from "@/models";
 import type { SettingsMap } from "@/types";
 
 function settled<T>(result: PromiseSettledResult<T>, fallback: T): T {
@@ -29,7 +29,7 @@ export const getSiteContext = cache(async () => {
     footerLegal: settled<Menu | null>(footerLegal, null),
     services: settled<Service[]>(services, []),
     faqs: settled<Faq[]>(faqs, []),
-    testimonials: settled(testimonials, { data: [] as Testimonial[] }).data,
+    testimonials: testimonials.status === "fulfilled" ? testimonials.value.data : [],
   };
 });
 
