@@ -64,11 +64,13 @@ function sslOption(host: string, sslParam?: string | null) {
 
 function hostCandidates(primary: string) {
   const fallback = env("DB_HOST_FALLBACK");
-  const production = process.env.NODE_ENV === "production";
-  const list = production
-    ? ["localhost", "127.0.0.1", primary, fallback]
-    : [primary, "localhost", "127.0.0.1", fallback];
-  return [...new Set(list.filter(Boolean))];
+  const local = primary === "localhost" || primary === "127.0.0.1";
+  // Vercel / remote Hostinger MySQL: use the configured host only.
+  // Do not probe localhost first — that breaks Vercel deploys.
+  if (local) {
+    return [...new Set([primary, "127.0.0.1", "localhost", fallback].filter(Boolean))];
+  }
+  return [...new Set([primary, fallback].filter(Boolean))];
 }
 
 function poolOptions(config: DbConfig, host: string): mysql.PoolOptions {

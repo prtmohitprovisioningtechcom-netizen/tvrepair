@@ -24,3 +24,5 @@ export const getSiteContext = cache(async () => {
     testimonials: testimonials.data,
   };
 });
+
+export type SiteContext = Awaited<ReturnType<typeof getSiteContext>>;

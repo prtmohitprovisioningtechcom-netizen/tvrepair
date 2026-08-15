@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 import { Header } from "@/components/website/Header";
 import { Footer, MobileCta } from "@/components/website/Footer";
-import { getSiteContext } from "@/server/services/site";
+import { getSiteContext, type SiteContext } from "@/server/services/site";
 import { SiteProvider } from "@/components/website/SiteProvider";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { localBusinessSchema, websiteSchema } from "@/lib/seo/schema";
 
 export const dynamic = "force-dynamic";
 
-const emptySite = {
+const emptySite: SiteContext = {
   settings: {},
   header: null,
   footer: null,
@@ -19,7 +19,7 @@ const emptySite = {
 };
 
 export default async function WebsiteLayout({ children }: { children: ReactNode }) {
-  let site = emptySite;
+  let site: SiteContext = emptySite;
   try {
     site = await getSiteContext();
   } catch (error) {
