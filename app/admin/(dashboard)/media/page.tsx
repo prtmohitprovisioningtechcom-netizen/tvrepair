@@ -26,7 +26,8 @@ export default function MediaPage() {
     form.append("file", file);
     form.append("title", file.name);
     const res = await fetch("/api/media", { method: "POST", body: form, credentials: "include" });
-    if (!res.ok) throw new Error("Upload failed");
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Upload failed");
     toast("success", "Uploaded");
     load();
   }

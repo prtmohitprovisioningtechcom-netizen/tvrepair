@@ -56,6 +56,7 @@ CREATE TABLE media (
   height INT UNSIGNED NULL,
   alt_text VARCHAR(255) NULL,
   title VARCHAR(255) NULL,
+  file_data LONGBLOB NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_media_created (created_at),

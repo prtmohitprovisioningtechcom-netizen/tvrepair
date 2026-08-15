@@ -1,13 +1,15 @@
 import { NextRequest } from "next/server";
 import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { handleApiError, jsonOk, parseSearchParams, requireAdmin } from "@/lib/auth/api";
 import { createMedia, listMedia } from "@/server/repositories/content.repository";
 import { AppError } from "@/lib/utils/errors";
+import {
+  ensureMediaFileDataColumn,
+  tryWritePublicUpload,
+} from "@/lib/media/storage";
 
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"]);
-const MAX_SIZE = 8 * 1024 * 1024;
+const MAX_SIZE = 4 * 1024 * 1024;
 const EXT: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
@@ -33,16 +35,16 @@ export async function POST(request: NextRequest) {
     const file = form.get("file");
     if (!(file instanceof File)) throw new AppError("File is required", 400);
     if (!ALLOWED.has(file.type)) throw new AppError("Unsupported file type", 400);
-    if (file.size > MAX_SIZE) throw new AppError("File exceeds 8MB limit", 400);
+    if (file.size > MAX_SIZE) throw new AppError("File exceeds 4MB limit", 400);
 
     const now = new Date();
     const folder = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}`;
     const filename = `${randomUUID()}.${EXT[file.type]}`;
-    const relative = path.join("uploads", folder, filename).replace(/\\/g, "/");
-    const destDir = path.join(process.cwd(), "public", "uploads", folder);
-    await mkdir(destDir, { recursive: true });
+    const relative = `uploads/${folder}/${filename}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(destDir, filename), buffer);
+
+    await ensureMediaFileDataColumn();
+    await tryWritePublicUpload(relative, buffer);
 
     const alt = String(form.get("alt_text") || "");
     const title = String(form.get("title") || file.name);
@@ -57,6 +59,7 @@ export async function POST(request: NextRequest) {
       height: null,
       alt_text: alt || null,
       title: title || null,
+      file_data: buffer,
     });
 
     return jsonOk({ id, url: `/${relative}` }, 201);

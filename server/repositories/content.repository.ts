@@ -297,7 +297,8 @@ export async function listMedia(opts: { page?: number; pageSize?: number; q?: st
     params,
   );
   const data = await query<Media>(
-    `SELECT * FROM media ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+    `SELECT id, filename, original_name, url, path, mime_type, size, width, height, alt_text, title, created_at
+     FROM media ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
     [...params, pageSize, offset],
   );
   return {
@@ -309,11 +310,13 @@ export async function listMedia(opts: { page?: number; pageSize?: number; q?: st
   } satisfies PaginatedResult<Media>;
 }
 
-export async function createMedia(input: Omit<Media, "id" | "created_at">) {
+export async function createMedia(
+  input: Omit<Media, "id" | "created_at"> & { file_data?: Buffer | null },
+) {
   return (
     await execute(
-      `INSERT INTO media (filename, original_name, url, path, mime_type, size, width, height, alt_text, title)
-       VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO media (filename, original_name, url, path, mime_type, size, width, height, alt_text, title, file_data)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
       [
         input.filename,
         input.original_name,
@@ -325,6 +328,7 @@ export async function createMedia(input: Omit<Media, "id" | "created_at">) {
         input.height,
         input.alt_text,
         input.title,
+        input.file_data ?? null,
       ],
     )
   ).insertId;
@@ -339,7 +343,11 @@ export async function updateMedia(id: number, input: { alt_text?: string | null;
 }
 
 export async function getMediaById(id: number) {
-  return queryOne<Media>("SELECT * FROM media WHERE id = ?", [id]);
+  return queryOne<Media>(
+    `SELECT id, filename, original_name, url, path, mime_type, size, width, height, alt_text, title, created_at
+     FROM media WHERE id = ?`,
+    [id],
+  );
 }
 
 export async function deleteMedia(id: number) {
