@@ -29,7 +29,8 @@ export type SectionType =
   | "custom_html"
   | "brands"
   | "trust_badges"
-  | "before_after";
+  | "before_after"
+  | "offer_slider";
 
 export type SeoEntityType =
   | "page"
@@ -108,4 +109,5 @@ export const SECTION_TYPES: { value: SectionType; label: string; help: string }[
   { value: "brands", label: "Brands we service", help: "Brand names (Samsung, LG…)." },
   { value: "trust_badges", label: "Brand strip", help: "Same as brands — names shown as a selector." },
   { value: "before_after", label: "Before / after", help: "Two photos side by side." },
+  { value: "offer_slider", label: "Offer Slider", help: "An automatic slider for running offers or promotions." },
 ];

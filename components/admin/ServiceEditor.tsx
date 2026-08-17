@@ -35,25 +35,30 @@ export function ServiceEditor({ id }: { id?: number }) {
     if (!id) return;
     apiGet<typeof form & { seo?: SeoForm; faqs?: { question: string; answer: string }[]; benefits?: string[]; symptoms?: string[] }>(
       `/services/${id}`,
-    ).then((s) => {
-      setForm({
-        name: s.name,
-        slug: s.slug,
-        short_description: s.short_description || "",
-        description: s.description || "",
-        image_id: s.image_id,
-        image_url: s.image_url || "",
-        icon: s.icon || "",
-        benefits: (s.benefits || []).join("\n"),
-        symptoms: (s.symptoms || []).join("\n"),
-        is_featured: Boolean(s.is_featured),
-        status: s.status,
-        sort_order: s.sort_order || 0,
-        faqs: s.faqs?.length ? s.faqs : [{ question: "", answer: "" }],
+    )
+      .then((s) => {
+        setForm({
+          name: s.name,
+          slug: s.slug,
+          short_description: s.short_description || "",
+          description: s.description || "",
+          image_id: s.image_id,
+          image_url: s.image_url || "",
+          icon: s.icon || "",
+          benefits: (s.benefits || []).join("\n"),
+          symptoms: (s.symptoms || []).join("\n"),
+          is_featured: Boolean(s.is_featured),
+          status: s.status,
+          sort_order: s.sort_order || 0,
+          faqs: s.faqs?.length ? s.faqs : [{ question: "", answer: "" }],
+        });
+        setSeo(s.seo || {});
+      })
+      .catch((err) => {
+        toast("error", err instanceof Error ? err.message : "Service not found");
+        router.push("/admin/services");
       });
-      setSeo(s.seo || {});
-    });
-  }, [id]);
+  }, [id, router, toast]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();

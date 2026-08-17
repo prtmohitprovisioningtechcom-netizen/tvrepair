@@ -153,34 +153,6 @@ export function ServiceDetailView({
       </section>
 
       <FAQSection heading={`Questions about ${item.name}`} items={faqs} />
-
-      {others.length ? (
-        <section className="section-pad bg-cream">
-          <div className="container-wide">
-            <Reveal>
-              <p className="eyebrow">More from the bench</p>
-              <h2 className="mt-2 font-display text-xl sm:text-2xl">Related TV services</h2>
-            </Reveal>
-            <div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
-              {others.map((service, i) => (
-                <Reveal key={service.id} delay={i * 60} className="h-full">
-                  <ServiceCard
-                    name={service.name}
-                    slug={service.slug}
-                    description={service.short_description}
-                    image={service.image_url}
-                  />
-                </Reveal>
-              ))}
-            </div>
-            <p className="mt-6">
-              <Link href="/tv-repair" className="text-sm font-semibold text-copper hover:underline">
-                View all services
-              </Link>
-            </p>
-          </div>
-        </section>
-      ) : null}
     </>
   );
 }

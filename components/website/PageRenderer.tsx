@@ -12,6 +12,7 @@ import { BrandsStrip } from "@/components/website/BrandsStrip";
 import { BookingSection } from "@/components/website/BookingSection";
 import { SiteLink } from "@/components/website/SiteLink";
 import { FeaturesSection } from "@/components/website/FeaturesSection";
+import { OfferSlider } from "@/components/website/OfferSlider";
 import { Reveal } from "@/components/website/Reveal";
 import { phoneHref } from "@/lib/utils/cn";
 import { sanitizeHtml } from "@/lib/utils/sanitize";
@@ -259,8 +260,8 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
         <div className="container-wide">
           <h2 className="font-display text-2xl sm:text-3xl">{str("heading", "Gallery")}</h2>
           <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {images.map((src) => (
-              <div key={src} className="relative aspect-4/3 overflow-hidden rounded-2xl">
+            {images.map((src, i) => (
+              <div key={`${src}-${i}`} className="relative aspect-4/3 overflow-hidden rounded-2xl">
                 <CmsImage src={src} alt="" sizes="(max-width: 1024px) 100vw, 33vw" />
               </div>
             ))}
@@ -268,6 +269,12 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
         </div>
       </section>
     );
+  }
+
+  if (section.type === "offer_slider") {
+    const images = Array.isArray(c.images) ? (c.images as string[]).filter(Boolean) : [];
+    if (!images.length) return null;
+    return <OfferSlider images={images} />;
   }
 
   if (section.type === "contact_form") {

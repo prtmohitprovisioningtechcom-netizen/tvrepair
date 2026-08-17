@@ -136,6 +136,7 @@ export default function GalleryPage() {
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         onSelect={handleAddMedia}
+        multiple={true}
       />
     </div>
   );

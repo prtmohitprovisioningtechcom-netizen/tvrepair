@@ -75,19 +75,22 @@ export function GalleryField({
     <div className="md:col-span-2">
       <Field label={label} hint="Upload photos of the work. These show on the website.">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {images.map((src) => (
-            <div key={src} className="relative overflow-hidden rounded-xl border border-line">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" className="h-28 w-full object-cover" />
-              <button
-                type="button"
-                className="absolute right-1 top-1 rounded-full bg-white/90 px-2 py-0.5 text-xs text-danger"
-                onClick={() => onChange(images.filter((item) => item !== src))}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+          {images.map((imageUrl, itemIndex) => {
+            const safeKey = String(imageUrl) + "-idx-" + String(itemIndex);
+            return (
+              <div key={safeKey} className="relative overflow-hidden rounded-xl border border-line">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={imageUrl} alt="" className="h-28 w-full object-cover" />
+                <button
+                  type="button"
+                  className="absolute right-1 top-1 rounded-full bg-white/90 px-2 py-0.5 text-xs text-danger"
+                  onClick={() => onChange(images.filter((_, filterIndex) => filterIndex !== itemIndex))}
+                >
+                  Remove
+                </button>
+              </div>
+            );
+          })}
           <button
             type="button"
             onClick={() => setOpen(true)}

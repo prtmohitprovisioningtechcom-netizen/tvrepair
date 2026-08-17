@@ -13,10 +13,12 @@ export function MediaPicker({
   open,
   onClose,
   onSelect,
+  multiple = false,
 }: {
   open: boolean;
   onClose: () => void;
   onSelect: (media: Media) => void;
+  multiple?: boolean;
 }) {
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
@@ -32,17 +34,24 @@ export function MediaPicker({
     if (open) load().catch((e) => pushToast("error", e.message));
   }, [open, page]);
 
-  async function upload(file: File) {
-    const form = new FormData();
-    form.append("file", file);
-    form.append("title", file.name);
-    const res = await fetch("/api/media", { method: "POST", body: form, credentials: "include" });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Upload failed");
-    await load();
-    pushToast("success", "Image uploaded");
-    onSelect(data as Media);
-    onClose();
+  async function uploadFiles(files: File[]) {
+    try {
+      if (files.length > 1) pushToast("success", `Uploading ${files.length} images...`);
+      for (const file of files) {
+        const form = new FormData();
+        form.append("file", file);
+        form.append("title", file.name);
+        const res = await fetch("/api/media", { method: "POST", body: form, credentials: "include" });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+        onSelect(data as Media);
+      }
+      await load();
+      pushToast("success", files.length > 1 ? "All images uploaded" : "Image uploaded");
+      if (!multiple || files.length === 1) onClose();
+    } catch (err: any) {
+      pushToast("error", err.message);
+    }
   }
 
   if (!open) return null;
@@ -70,11 +79,12 @@ export function MediaPicker({
             Upload
             <input
               type="file"
+              multiple={multiple}
               accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
               className="hidden"
               onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) upload(file).catch((err) => pushToast("error", err.message));
+                const files = Array.from(e.target.files || []);
+                if (files.length) uploadFiles(files);
               }}
             />
           </label>
@@ -87,7 +97,8 @@ export function MediaPicker({
               className="overflow-hidden rounded-xl border border-line text-left transition hover:border-copper"
               onClick={() => {
                 onSelect(item);
-                onClose();
+                if (!multiple) onClose();
+                else pushToast("success", "Image added");
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

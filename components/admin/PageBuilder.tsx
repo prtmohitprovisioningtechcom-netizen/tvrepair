@@ -87,6 +87,9 @@ export function defaultSection(type: SectionType): BuilderSection {
       afterImage: "",
       body: "Panel, backlight and board-level repairs completed on-site or in workshop.",
     },
+    offer_slider: {
+      images: [],
+    },
   };
 
   return {
@@ -429,7 +432,7 @@ function SectionFields({
     );
   }
 
-  if (section.type === "gallery") {
+  if (section.type === "gallery" || section.type === "offer_slider") {
     const images = Array.isArray(c.images) ? (c.images as string[]) : [];
     return (
       <>
