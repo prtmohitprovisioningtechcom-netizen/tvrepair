@@ -1,32 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  /* Primary dark brown (used as navy) */
+  /* ── Primary palette (from indialedtvrepairingcenter.in) ── */
   --navy: #612D05;
-  --navy-2: #8c4c2f; /* slightly lighter */
-  --navy-3: #b27658; /* even lighter */
-  /* Accent red (used as copper) */
+  --navy-2: #7a3f1a;
+  --navy-3: #9c5e35;
   --copper: #FF0000;
   --copper-dark: #CC0000;
-  /* Neutral colors */
+
+  /* ── Neutral / surface ── */
   --cream: #f3efe8;
   --paper: #faf8f5;
-  --ink: #ffffff; /* white text for contrast */
+  --ink: #1a1a1a;          /* dark text for readability on light bg */
+  --ink-light: #ffffff;    /* white text for dark backgrounds */
   --muted: #5a6370;
   --line: #e4ddd2;
   --white: #ffffff;
   --black: #000000;
-  /* Optional extra variables */
+
+  /* ── Semantic ── */
   --primary: #612D05;
   --accent: #FF0000;
   --success: #1f7a4d;
   --danger: #b42318;
   --admin-bg: #f3f1ec;
+
+  /* ── Radii ── */
   --radius: 16px;
   --radius-sm: 10px;
 }
 
-
+/* ── Tailwind v4 theme tokens ── */
 @theme inline {
   --color-navy: var(--navy);
   --color-navy-2: var(--navy-2);
@@ -36,6 +40,7 @@
   --color-cream: var(--cream);
   --color-paper: var(--paper);
   --color-ink: var(--ink);
+  --color-ink-light: var(--ink-light);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-white: var(--white);
@@ -47,6 +52,9 @@
   --font-display: var(--font-display);
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  BASE STYLES                                                  */
+/* ───────────────────────────────────────────────────────────── */
 
 html {
   scroll-behavior: smooth;
@@ -70,7 +78,12 @@ h3,
   font-family: var(--font-display), var(--font-body), sans-serif;
   letter-spacing: -0.035em;
   overflow-wrap: break-word;
+  color: var(--ink);
 }
+
+/* ───────────────────────────────────────────────────────────── */
+/*  LAYOUT CONTAINERS                                            */
+/* ───────────────────────────────────────────────────────────── */
 
 .container-wide {
   width: min(1160px, 100%);
@@ -88,6 +101,10 @@ h3,
   padding-block: clamp(2rem, 5.5vw, 6rem);
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  TYPOGRAPHY UTILITIES                                         */
+/* ───────────────────────────────────────────────────────────── */
+
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -99,6 +116,7 @@ h3,
   color: var(--copper);
 }
 
+/* ── Prose (rich text content) ── */
 .prose-site {
   color: var(--muted);
   line-height: 1.8;
@@ -154,8 +172,12 @@ h3,
   overflow-x: auto;
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  SURFACES & SHADOWS                                           */
+/* ───────────────────────────────────────────────────────────── */
+
 .shadow-soft {
-  box-shadow: 0 20px 50px -24px rgba(8, 21, 37, 0.28);
+  box-shadow: 0 20px 50px -24px rgba(97, 45, 5, 0.25);
 }
 
 .card-surface {
@@ -164,22 +186,30 @@ h3,
   border-radius: var(--radius);
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  HERO                                                         */
+/* ───────────────────────────────────────────────────────────── */
+
 .page-hero-mesh {
   background-image:
-    radial-gradient(ellipse 70% 80% at 100% -10%, rgba(208, 106, 43, 0.28), transparent 55%),
+    radial-gradient(ellipse 70% 80% at 100% -10%, rgba(255, 0, 0, 0.18), transparent 55%),
     radial-gradient(ellipse 50% 50% at 0% 110%, rgba(255, 255, 255, 0.08), transparent 50%);
 }
 
 .hero-photo-shade {
   background:
-    linear-gradient(180deg, rgba(8, 21, 37, 0.78) 0%, rgba(8, 21, 37, 0.88) 42%, rgba(8, 21, 37, 0.94) 100%);
+    linear-gradient(180deg, rgba(97, 45, 5, 0.78) 0%, rgba(97, 45, 5, 0.88) 42%, rgba(97, 45, 5, 0.94) 100%);
 }
 
 @media (min-width: 1024px) {
   .hero-photo-shade {
-    background: linear-gradient(90deg, rgba(8, 21, 37, 0.86) 0%, rgba(8, 21, 37, 0.62) 48%, rgba(8, 21, 37, 0.28) 100%);
+    background: linear-gradient(90deg, rgba(97, 45, 5, 0.86) 0%, rgba(97, 45, 5, 0.62) 48%, rgba(97, 45, 5, 0.28) 100%);
   }
 }
+
+/* ───────────────────────────────────────────────────────────── */
+/*  FORM INPUTS                                                  */
+/* ───────────────────────────────────────────────────────────── */
 
 .admin-input,
 .site-input {
@@ -204,8 +234,12 @@ h3,
 .admin-input:focus,
 .site-input:focus {
   border-color: var(--copper);
-  box-shadow: 0 0 0 4px rgba(208, 106, 43, 0.12);
+  box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.10);
 }
+
+/* ───────────────────────────────────────────────────────────── */
+/*  BUTTONS                                                      */
+/* ───────────────────────────────────────────────────────────── */
 
 .btn-primary,
 .btn-navy,
@@ -243,7 +277,7 @@ h3,
 
 .btn-primary:hover {
   background: var(--copper-dark);
-  box-shadow: 0 10px 24px -12px rgba(180, 83, 28, 0.8);
+  box-shadow: 0 10px 24px -12px rgba(255, 0, 0, 0.5);
 }
 
 .btn-navy {
@@ -265,6 +299,10 @@ h3,
   color: var(--navy);
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  MOBILE CTA BAR                                               */
+/* ───────────────────────────────────────────────────────────── */
+
 .mobile-cta {
   position: fixed;
   inset-inline: 0.5rem;
@@ -274,7 +312,7 @@ h3,
   grid-template-columns: 1fr 1fr;
   overflow: hidden;
   border-radius: 12px;
-  box-shadow: 0 16px 40px -16px rgba(8, 21, 37, 0.55);
+  box-shadow: 0 16px 40px -16px rgba(97, 45, 5, 0.45);
 }
 
 .mobile-cta a {
@@ -288,9 +326,17 @@ h3,
   }
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  IMAGES                                                       */
+/* ───────────────────────────────────────────────────────────── */
+
 img {
   max-width: 100%;
 }
+
+/* ───────────────────────────────────────────────────────────── */
+/*  FEATURE CARDS                                                */
+/* ───────────────────────────────────────────────────────────── */
 
 @media (hover: none) {
   .feature-card:hover {
@@ -325,13 +371,17 @@ img {
 
 .feature-card:hover {
   transform: translateY(-8px);
-  border-color: rgba(208, 106, 43, 0.45);
-  box-shadow: 0 24px 44px -24px rgba(8, 21, 37, 0.28);
+  border-color: rgba(255, 0, 0, 0.35);
+  box-shadow: 0 24px 44px -24px rgba(97, 45, 5, 0.25);
 }
 
 .feature-card:hover .feature-ring {
   animation: feature-spin 7s linear infinite;
 }
+
+/* ───────────────────────────────────────────────────────────── */
+/*  KEYFRAMES                                                    */
+/* ───────────────────────────────────────────────────────────── */
 
 @keyframes feature-rise {
   from {
@@ -369,6 +419,10 @@ img {
   }
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  REVEAL ANIMATIONS                                            */
+/* ───────────────────────────────────────────────────────────── */
+
 .reveal-wait {
   opacity: 0;
 }
@@ -394,6 +448,10 @@ img {
   animation: review-fade 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  FAQ ACCORDION                                                */
+/* ───────────────────────────────────────────────────────────── */
+
 .faq-answer {
   display: grid;
   grid-template-rows: 0fr;
@@ -417,6 +475,10 @@ img {
   transform: rotate(180deg);
 }
 
+/* ───────────────────────────────────────────────────────────── */
+/*  ANIMATION KEYFRAMES (reveal / review)                        */
+/* ───────────────────────────────────────────────────────────── */
+
 @keyframes reveal-rise {
   from {
     opacity: 0;
@@ -437,6 +499,10 @@ img {
     transform: translateY(0);
   }
 }
+
+/* ───────────────────────────────────────────────────────────── */
+/*  REDUCED MOTION                                               */
+/* ───────────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   .feature-wait,

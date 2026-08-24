@@ -9,7 +9,7 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, fontFamily: "system-ui, sans-serif", background: "#081525", color: "#fff" }}>
+      <body style={{ margin: 0, fontFamily: "system-ui, sans-serif", background: "#612D05", color: "#fff" }}>
         <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "2rem", textAlign: "center" }}>
           <div>
             <p style={{ letterSpacing: "0.16em", textTransform: "uppercase", fontSize: 12, opacity: 0.7 }}>Temporary snag</p>
