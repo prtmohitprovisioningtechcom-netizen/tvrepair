@@ -177,6 +177,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
               <Reveal key={service.id} delay={i * 60}>
                 <Link
                   href={`/tv-repair/${service.slug}`}
+                  prefetch={true}
                   className="group flex items-center gap-5 rounded-xl p-4 transition hover:bg-white/5"
                 >
                   <span className="relative shrink-0 h-28 w-28 overflow-hidden rounded-full border-2 border-white/25 shadow-lg">
@@ -212,6 +213,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
               <Reveal key={service.id} delay={i * 60}>
                 <Link
                   href={`/tv-repair/${service.slug}`}
+                  prefetch={true}
                   className="group flex items-start gap-4 hover:opacity-90 transition"
                 >
                   <span className="relative shrink-0 h-20 w-20 overflow-hidden rounded-full border-2 border-white/30">
