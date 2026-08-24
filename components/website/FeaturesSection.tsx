@@ -14,6 +14,13 @@ export function FeaturesSection({
   heading?: string;
   items: { title: string; body: string; image?: string }[];
 }) {
+  const unwantedHeadings = ["Why choose us", "How we work"];
+  if (heading && unwantedHeadings.includes(heading.trim())) return null;
+
+  const filteredItems = items.filter(
+    (it) => !["Inspect", "Confirm", "Restore"].includes(it.title.trim()),
+  );
+
   const ref = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
 
@@ -37,29 +44,29 @@ export function FeaturesSection({
     return () => observer.disconnect();
   }, []);
 
-  if (!items.length) return null;
+  if (!filteredItems.length) return null;
 
   return (
     <section ref={ref} className="section-pad">
       <div className="container-wide">
         <div className={`max-w-2xl ${inView ? "feature-in" : "feature-wait"}`}>
-          <p className="eyebrow">Why choose us</p>
+          <p className="eyebrow">{heading || ""}</p>
           <h2 className="mt-1.5 wrap-break-word font-display text-2xl leading-snug sm:mt-2 sm:text-3xl md:text-4xl lg:text-[2.75rem]">
-            {heading || "Why choose us"}
+            {heading || ""}
           </h2>
           <span className={`mt-2.5 block h-0.5 w-10 origin-left rounded-full bg-copper sm:mt-5 sm:w-16 ${inView ? "feature-line-draw" : "scale-x-0"}`} />
         </div>
 
-        {items.length > 1 ? (
+        {filteredItems.length > 1 ? (
           <div className="relative mt-12 hidden lg:block" aria-hidden>
             <div
               className="absolute top-[1.15rem] h-px overflow-hidden bg-line"
-              style={{ left: `${50 / items.length}%`, right: `${50 / items.length}%` }}
+              style={{ left: `${50 / filteredItems.length}%`, right: `${50 / filteredItems.length}%` }}
             >
               <div className={`h-full origin-left bg-copper ${inView ? "feature-line-draw" : "scale-x-0"}`} />
             </div>
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
-              {items.map((item, i) => (
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${filteredItems.length}, minmax(0, 1fr))` }}>
+              {filteredItems.map((item, i) => (
                 <div key={`${item.title}-step`} className="flex justify-center">
                   <span
                     className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-copper/50 bg-paper font-display text-xs tracking-[0.14em] text-copper ${
@@ -75,8 +82,8 @@ export function FeaturesSection({
           </div>
         ) : null}
 
-        <div className={`mt-4 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-5 md:gap-6 ${items.length === 2 ? "" : "lg:grid-cols-3"}`}>
-          {items.map((item, i) => {
+        <div className={`mt-4 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-5 md:gap-6 ${filteredItems.length === 2 ? "" : "lg:grid-cols-3"}`}>
+          {filteredItems.map((item, i) => {
             const Icon = ICONS[i % ICONS.length];
             const n = String(i + 1).padStart(2, "0");
             const photo = resolveWorkImage(item.image);

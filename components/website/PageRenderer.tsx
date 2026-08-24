@@ -155,37 +155,66 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
   }
 
   if (section.type === "services_grid") {
-    const limit = Number(c.limit || 8);
+    const limit = Number(c.limit || 6);
+    const services = extras.services.slice(0, limit);
     return (
-      <section className="section-pad bg-cream">
+      <section className="section-pad bg-navy text-white">
         <div className="container-wide">
           <Reveal>
-            <div className="flex min-w-0 items-end justify-between gap-4">
-              <div className="min-w-0">
-                <p className="eyebrow">Services</p>
-                <h2 className="mt-2 wrap-break-word font-display text-2xl sm:text-3xl md:text-4xl">{str("heading", "TV repair services")}</h2>
-              </div>
-              <Link href="/tv-repair" className="hidden text-sm font-semibold text-copper md:inline">
-                View all
-              </Link>
+            <div className="mb-10 text-center">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white">
+                {str("heading", "Our Services")}
+              </h2>
+              <div className="mx-auto mt-3 h-[3px] w-16 rounded-full bg-white/60" />
             </div>
           </Reveal>
-          <div className="mt-6 grid grid-cols-2 gap-2.5 sm:mt-10 sm:gap-4 lg:grid-cols-4">
-            {extras.services.slice(0, limit).map((service, i) => (
-              <Reveal key={service.id} delay={i * 70} className="h-full">
-                <ServiceCard
-                  name={service.name}
-                  slug={service.slug}
-                  description={service.short_description}
-                  image={service.image_url}
-                />
+          <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, i) => (
+              <Reveal key={service.id} delay={i * 60}>
+                <Link
+                  href={`/tv-repair/${service.slug}`}
+                  className="group flex items-start gap-4 hover:opacity-90 transition"
+                >
+                  {/* Circular image */}
+                  <span className="relative shrink-0 h-20 w-20 overflow-hidden rounded-full border-2 border-white/30 bg-navy-2 sm:h-24 sm:w-24">
+                    {service.image_url ? (
+                      <CmsImage
+                        src={service.image_url}
+                        alt={service.name}
+                        className="object-cover"
+                        sizes="96px"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center text-white/40 text-3xl">📺</span>
+                    )}
+                  </span>
+                  {/* Text */}
+                  <span className="min-w-0 pt-1">
+                    <span className="block font-display text-base font-semibold text-white group-hover:text-copper transition sm:text-lg">
+                      {service.name}
+                    </span>
+                    {service.short_description ? (
+                      <span className="mt-1.5 block text-xs leading-5 text-white/65 sm:text-sm sm:leading-6 line-clamp-3">
+                        &ldquo;{service.short_description}&rdquo;
+                      </span>
+                    ) : null}
+                  </span>
+                </Link>
               </Reveal>
             ))}
           </div>
+          {extras.services.length > limit ? (
+            <div className="mt-10 text-center">
+              <Link href="/services" className="btn-primary inline-flex">
+                View All Services
+              </Link>
+            </div>
+          ) : null}
         </div>
       </section>
     );
   }
+
 
   if (section.type === "faq") {
     const category = str("category");
