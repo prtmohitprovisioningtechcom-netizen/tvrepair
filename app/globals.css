@@ -27,7 +27,27 @@
 }
 
 
-/* Theme mapping block removed: @theme inline is unsupported; CSS variables already defined above */
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-navy-3: var(--navy-3);
+  --color-copper: var(--copper);
+  --color-copper-dark: var(--copper-dark);
+  --color-cream: var(--cream);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-white: var(--white);
+  --color-black: var(--black);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-admin-bg: var(--admin-bg);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+
 html {
   scroll-behavior: smooth;
   overflow-x: clip;
