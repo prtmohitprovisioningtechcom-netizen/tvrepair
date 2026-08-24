@@ -6,7 +6,7 @@ import { SiteProvider } from "@/components/website/SiteProvider";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { localBusinessSchema, websiteSchema } from "@/lib/seo/schema";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const emptySite: SiteContext = {
   settings: {},

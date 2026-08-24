@@ -9,8 +9,13 @@ type DbConfig = {
   sslParam: string | null;
 };
 
-let pool: mysql.Pool | null = null;
-let poolPromise: Promise<mysql.Pool> | null = null;
+const globalForDb = globalThis as unknown as {
+  mysqlPool: mysql.Pool | null;
+  mysqlPoolPromise: Promise<mysql.Pool> | null;
+};
+
+let pool = globalForDb.mysqlPool || null;
+let poolPromise = globalForDb.mysqlPoolPromise || null;
 
 function env(name: string, fallback = "") {
   const value = process.env[name];
@@ -135,10 +140,13 @@ export async function getPool(): Promise<mysql.Pool> {
     poolPromise = createWorkingPool()
       .then((created) => {
         pool = created;
+        globalForDb.mysqlPool = pool;
+        globalForDb.mysqlPoolPromise = poolPromise;
         return created;
       })
       .catch((error) => {
         poolPromise = null;
+        globalForDb.mysqlPoolPromise = null;
         throw error;
       });
   }
