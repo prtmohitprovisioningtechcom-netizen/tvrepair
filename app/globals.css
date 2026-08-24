@@ -1,17 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --navy: #081525;
-  --navy-2: #102033;
-  --navy-3: #1c334c;
-  --copper: #d06a2b;
-  --copper-dark: #b4531c;
+  /* Primary dark brown (used as navy) */
+  --navy: #612D05;
+  --navy-2: #8c4c2f; /* slightly lighter */
+  --navy-3: #b27658; /* even lighter */
+  /* Accent red (used as copper) */
+  --copper: #FF0000;
+  --copper-dark: #CC0000;
+  /* Neutral colors */
   --cream: #f3efe8;
   --paper: #faf8f5;
-  --ink: #12161c;
+  --ink: #ffffff; /* white text for contrast */
   --muted: #5a6370;
   --line: #e4ddd2;
   --white: #ffffff;
+  --black: #000000;
+  /* Optional extra variables */
+  --primary: #612D05;
+  --accent: #FF0000;
   --success: #1f7a4d;
   --danger: #b42318;
   --admin-bg: #f3f1ec;
@@ -19,23 +26,8 @@
   --radius-sm: 10px;
 }
 
-@theme inline {
-  --color-navy: var(--navy);
-  --color-navy-2: var(--navy-2);
-  --color-navy-3: var(--navy-3);
-  --color-copper: var(--copper);
-  --color-copper-dark: var(--copper-dark);
-  --color-cream: var(--cream);
-  --color-paper: var(--paper);
-  --color-ink: var(--ink);
-  --color-muted: var(--muted);
-  --color-line: var(--line);
-  --color-success: var(--success);
-  --color-danger: var(--danger);
-  --font-sans: var(--font-body);
-  --font-display: var(--font-display);
-}
 
+/* Theme mapping block removed: @theme inline is unsupported; CSS variables already defined above */
 html {
   scroll-behavior: smooth;
   overflow-x: clip;
