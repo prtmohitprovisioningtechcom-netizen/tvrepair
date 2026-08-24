@@ -14,12 +14,34 @@ export function FeaturesSection({
   heading?: string;
   items: { title: string; body: string; image?: string }[];
 }) {
-  const unwantedHeadings = ["Why choose us", "How we work"];
+  const unwantedHeadings = ["How we work"];
   if (heading && unwantedHeadings.includes(heading.trim())) return null;
 
-  const filteredItems = items.filter(
-    (it) => !["Inspect", "Confirm", "Restore"].includes(it.title.trim()),
-  );
+  let displayItems = items;
+  if (heading && heading.trim().toLowerCase() === "why choose us") {
+    displayItems = [
+      {
+        title: "Expert Technicians",
+        body: "Our skilled team specializes in TV repair and LED TV Repair, handling all brands and models with reliable expertise.",
+      },
+      {
+        title: "Affordable Pricing",
+        body: "We provide budget-friendly repair solutions with transparent costs, ensuring high-quality service at the best price.",
+      },
+      {
+        title: "Doorstep Service",
+        body: "Enjoy convenient doorstep TV repair near me and LED TV Repair near me with fast, same-day solutions.",
+      },
+      {
+        title: "Genuine Spare Parts",
+        body: "We use only genuine, brand-approved parts to guarantee durability and long-lasting repair performance.",
+      }
+    ];
+  } else {
+    displayItems = items.filter(
+      (it) => !["Inspect", "Confirm", "Restore"].includes(it.title.trim()),
+    );
+  }
 
   const ref = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
@@ -44,7 +66,7 @@ export function FeaturesSection({
     return () => observer.disconnect();
   }, []);
 
-  if (!filteredItems.length) return null;
+  if (!displayItems.length) return null;
 
   return (
     <section ref={ref} className="section-pad">
@@ -57,16 +79,16 @@ export function FeaturesSection({
           <span className={`mt-2.5 block h-0.5 w-10 origin-left rounded-full bg-copper sm:mt-5 sm:w-16 ${inView ? "feature-line-draw" : "scale-x-0"}`} />
         </div>
 
-        {filteredItems.length > 1 ? (
+        {displayItems.length > 1 ? (
           <div className="relative mt-12 hidden lg:block" aria-hidden>
             <div
               className="absolute top-[1.15rem] h-px overflow-hidden bg-line"
-              style={{ left: `${50 / filteredItems.length}%`, right: `${50 / filteredItems.length}%` }}
+              style={{ left: `${50 / displayItems.length}%`, right: `${50 / displayItems.length}%` }}
             >
               <div className={`h-full origin-left bg-copper ${inView ? "feature-line-draw" : "scale-x-0"}`} />
             </div>
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${filteredItems.length}, minmax(0, 1fr))` }}>
-              {filteredItems.map((item, i) => (
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${displayItems.length}, minmax(0, 1fr))` }}>
+              {displayItems.map((item, i) => (
                 <div key={`${item.title}-step`} className="flex justify-center">
                   <span
                     className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-copper/50 bg-paper font-display text-xs tracking-[0.14em] text-copper ${
@@ -82,8 +104,8 @@ export function FeaturesSection({
           </div>
         ) : null}
 
-        <div className={`mt-4 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-5 md:gap-6 ${filteredItems.length === 2 ? "" : "lg:grid-cols-3"}`}>
-          {filteredItems.map((item, i) => {
+        <div className={`mt-4 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-5 md:gap-6 ${displayItems.length === 2 ? "" : "lg:grid-cols-4"}`}>
+          {displayItems.map((item, i) => {
             const Icon = ICONS[i % ICONS.length];
             const n = String(i + 1).padStart(2, "0");
             const photo = resolveWorkImage(item.image);
@@ -114,9 +136,9 @@ export function FeaturesSection({
                     <Icon size={18} className="relative hidden sm:block" />
                   </span>
                 </div>
-                <div className="p-2.5 sm:p-6">
-                  <h3 className="font-display text-base leading-snug text-ink sm:text-2xl">{item.title}</h3>
-                  <p className="mt-1.5 line-clamp-3 text-xs leading-5 text-muted sm:mt-3 sm:line-clamp-none sm:text-sm sm:leading-7">{item.body}</p>
+                <div className="p-2.5 sm:p-6 text-center">
+                  <h3 className="font-display text-base leading-snug text-ink sm:text-xl">{item.title}</h3>
+                  <p className="mt-1.5 line-clamp-3 text-xs leading-5 text-muted sm:mt-3 sm:line-clamp-none sm:text-[13px] sm:leading-6">{item.body}</p>
                 </div>
                 <span className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-copper transition duration-500 ease-out group-hover:scale-x-100" />
               </article>

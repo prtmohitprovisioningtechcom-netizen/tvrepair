@@ -12,13 +12,15 @@ import { BrandsStrip } from "@/components/website/BrandsStrip";
 import { BookingSection } from "@/components/website/BookingSection";
 import { SiteLink } from "@/components/website/SiteLink";
 import { FeaturesSection } from "@/components/website/FeaturesSection";
+import { StatsSection } from "@/components/website/StatsSection";
 import { OfferSlider } from "@/components/website/OfferSlider";
 import { Reveal } from "@/components/website/Reveal";
 import { phoneHref } from "@/lib/utils/cn";
 import { sanitizeHtml } from "@/lib/utils/sanitize";
-import { resolveWorkImage } from "@/lib/site-images";
+import { resolveWorkImage, SITE_IMAGES } from "@/lib/site-images";
 import { applySettingsTokens } from "@/lib/site-settings";
 import { CmsImage } from "@/components/website/CmsImage";
+import { HeroImageSlider } from "@/components/website/HeroImageSlider";
 
 export interface RendererExtras {
   services: Service[];
@@ -168,33 +170,33 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
               <div className="mx-auto mt-3 h-[3px] w-16 rounded-full bg-white/60" />
             </div>
           </Reveal>
-          <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+
+          {/* Desktop: 3-col grid with circular image + text side by side */}
+          <div className="hidden lg:grid lg:grid-cols-3 gap-x-10 gap-y-8">
             {services.map((service, i) => (
               <Reveal key={service.id} delay={i * 60}>
                 <Link
                   href={`/tv-repair/${service.slug}`}
-                  className="group flex items-start gap-4 hover:opacity-90 transition"
+                  className="group flex items-center gap-5 rounded-xl p-4 transition hover:bg-white/5"
                 >
-                  {/* Circular image */}
-                  <span className="relative shrink-0 h-20 w-20 overflow-hidden rounded-full border-2 border-white/30 bg-navy-2 sm:h-24 sm:w-24">
+                  <span className="relative shrink-0 h-28 w-28 overflow-hidden rounded-full border-2 border-white/25 shadow-lg">
                     {service.image_url ? (
                       <CmsImage
                         src={service.image_url}
                         alt={service.name}
-                        className="object-cover"
-                        sizes="96px"
+                        className="object-cover transition duration-500 group-hover:scale-110"
+                        sizes="112px"
                       />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center text-white/40 text-3xl">📺</span>
+                      <span className="flex h-full w-full items-center justify-center text-white/40 text-4xl">📺</span>
                     )}
                   </span>
-                  {/* Text */}
-                  <span className="min-w-0 pt-1">
-                    <span className="block font-display text-base font-semibold text-white group-hover:text-copper transition sm:text-lg">
+                  <span className="min-w-0">
+                    <span className="block font-display text-lg font-semibold text-white group-hover:text-copper transition leading-snug">
                       {service.name}
                     </span>
                     {service.short_description ? (
-                      <span className="mt-1.5 block text-xs leading-5 text-white/65 sm:text-sm sm:leading-6 line-clamp-3">
+                      <span className="mt-1.5 block text-sm leading-6 text-white/65 line-clamp-3">
                         &ldquo;{service.short_description}&rdquo;
                       </span>
                     ) : null}
@@ -203,6 +205,42 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
               </Reveal>
             ))}
           </div>
+
+          {/* Mobile/Tablet: 2-col compact grid */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:hidden">
+            {services.map((service, i) => (
+              <Reveal key={service.id} delay={i * 60}>
+                <Link
+                  href={`/tv-repair/${service.slug}`}
+                  className="group flex items-start gap-4 hover:opacity-90 transition"
+                >
+                  <span className="relative shrink-0 h-20 w-20 overflow-hidden rounded-full border-2 border-white/30">
+                    {service.image_url ? (
+                      <CmsImage
+                        src={service.image_url}
+                        alt={service.name}
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center text-white/40 text-3xl">📺</span>
+                    )}
+                  </span>
+                  <span className="min-w-0 pt-1">
+                    <span className="block font-display text-base font-semibold text-white group-hover:text-copper transition">
+                      {service.name}
+                    </span>
+                    {service.short_description ? (
+                      <span className="mt-1 block text-xs leading-5 text-white/65 line-clamp-3">
+                        &ldquo;{service.short_description}&rdquo;
+                      </span>
+                    ) : null}
+                  </span>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+
           {extras.services.length > limit ? (
             <div className="mt-10 text-center">
               <Link href="/services" className="btn-primary inline-flex">
@@ -214,6 +252,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
       </section>
     );
   }
+
 
 
   if (section.type === "faq") {
@@ -278,25 +317,17 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
   }
 
   if (section.type === "statistics") {
-    return null;
+    return <StatsSection />;
   }
 
   if (section.type === "gallery") {
     const images = Array.isArray(c.images) ? (c.images as string[]).filter(Boolean) : [];
     if (!images.length) return null;
     return (
-      <section className="section-pad">
-        <div className="container-wide">
-          <h2 className="font-display text-2xl sm:text-3xl">{str("heading", "Gallery")}</h2>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {images.map((src, i) => (
-              <div key={`${src}-${i}`} className="relative aspect-4/3 overflow-hidden rounded-2xl">
-                <CmsImage src={src} alt="" sizes="(max-width: 1024px) 100vw, 33vw" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <div className="relative pt-12">
+        <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-center text-navy mb-[-2rem] z-10 relative">{str("heading", "Gallery")}</h2>
+        <OfferSlider images={images} />
+      </div>
     );
   }
 
