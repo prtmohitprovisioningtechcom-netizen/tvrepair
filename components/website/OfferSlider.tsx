@@ -24,7 +24,7 @@ export function OfferSlider({ images }: { images: string[] }) {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[21/8] overflow-hidden bg-navy">
+      <div className="relative w-full overflow-hidden bg-navy" style={{ minHeight: "340px", maxHeight: "620px", height: "56vw" }}>
         {images.map((img, i) => (
           <div
             key={i}
@@ -33,9 +33,9 @@ export function OfferSlider({ images }: { images: string[] }) {
             }`}
           >
             {/* blurred bg fill */}
-            <CmsImage src={img} alt="" sizes="100vw" className="absolute inset-0 h-full w-full object-cover opacity-30 blur-2xl scale-125" />
-            {/* main image */}
-            <CmsImage src={img} alt={`Slide ${i + 1}`} sizes="100vw" className="absolute inset-0 h-full w-full object-cover" priority={i === 0} />
+            <CmsImage src={img} alt="" sizes="100vw" className="absolute inset-0 h-full w-full object-cover opacity-20 blur-3xl scale-125" />
+            {/* main image — contained so nothing is cropped */}
+            <CmsImage src={img} alt={`Slide ${i + 1}`} sizes="100vw" className="absolute inset-0 h-full w-full object-contain" priority={i === 0} />
           </div>
         ))}
 
