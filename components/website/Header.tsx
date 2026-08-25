@@ -38,7 +38,7 @@ export function Header({
         </div>
       ) : null}
       <div className="border-b border-white/10 bg-navy/95 text-white backdrop-blur">
-        <div className="container-wide flex h-12 min-w-0 items-center justify-between gap-2 sm:h-16 sm:gap-3 lg:h-17 lg:gap-6">
+        <div className="container-wide flex h-14 min-w-0 items-center justify-between gap-2 sm:h-18 sm:gap-3 lg:h-20 lg:gap-6">
           <div className="min-w-0 shrink">
             <Logo light name={name} src={settings["business.logo"]} />
           </div>

@@ -18,11 +18,11 @@ export function Logo({
         <img
           src={photo}
           alt={name || "Logo"}
-          className="h-9 w-auto max-h-9 max-w-40 object-contain object-left sm:h-10 sm:max-h-10 sm:max-w-48 lg:h-11 lg:max-h-11 lg:max-w-56"
+          className="h-10 w-auto max-h-10 max-w-44 object-contain object-left sm:h-12 sm:max-h-12 sm:max-w-52 lg:h-14 lg:max-h-14 lg:max-w-64"
         />
       ) : (
         <span
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10 lg:h-11 lg:w-11 ${
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12 lg:h-14 lg:w-14 ${
             light ? "bg-copper text-white" : "bg-navy text-white"
           }`}
         >
