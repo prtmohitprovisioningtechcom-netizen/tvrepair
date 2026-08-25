@@ -167,7 +167,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white">
                 {str("heading", "Our Services")}
               </h2>
-              <div className="mx-auto mt-3 h-[3px] w-16 rounded-full bg-white/60" />
+              <div className="mx-auto mt-3 h-0.75 w-16 rounded-full bg-white/60" />
             </div>
           </Reveal>
 
@@ -327,7 +327,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
     if (!images.length) return null;
     return (
       <div className="relative pt-12">
-        <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-center text-navy mb-[-2rem] z-10 relative">{str("heading", "Gallery")}</h2>
+        <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-center text-navy -mb-8 z-10 relative">{str("heading", "Gallery")}</h2>
         <OfferSlider images={images} />
       </div>
     );
