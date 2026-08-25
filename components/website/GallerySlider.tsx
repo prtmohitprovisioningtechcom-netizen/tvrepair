@@ -85,13 +85,13 @@ export function GallerySlider({ images }: { images: GalleryImage[] }) {
             <div
               key={`${img.id}-${i}`}
               data-card
-              className="relative shrink-0 w-48 h-36 sm:w-56 sm:h-44 overflow-hidden rounded-xl border border-white/10 shadow-lg group"
+              className="relative shrink-0 w-48 h-36 sm:w-56 sm:h-44 overflow-hidden rounded-xl border border-white/10 bg-black/20 shadow-lg group"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={img.image_url}
                 alt={img.alt_text || img.caption || "Gallery"}
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                className="h-full w-full object-contain transition duration-500"
                 loading="lazy"
               />
               {img.caption && (

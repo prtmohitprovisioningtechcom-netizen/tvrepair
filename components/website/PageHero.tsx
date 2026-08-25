@@ -16,7 +16,7 @@ export function PageHero({
   return (
     <section className="relative isolate overflow-hidden bg-navy text-white">
       {photo ? (
-        <CmsImage src={photo} alt="" className="-z-10 hidden object-cover lg:block" priority />
+        <CmsImage src={photo} alt="" className="-z-10 hidden object-contain lg:block" priority />
       ) : null}
       <div className="page-hero-mesh pointer-events-none absolute inset-0" />
       {photo ? <div className="hero-photo-shade pointer-events-none absolute inset-0 hidden lg:block" /> : null}

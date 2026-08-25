@@ -28,7 +28,7 @@ export function HeroImageSlider({ images }: { images: string[] }) {
           <CmsImage
             src={img}
             alt="TV Repair Services"
-            className={`h-full w-full object-cover transition-transform duration-[4000ms] ease-out ${i === active ? "scale-100" : "scale-105"}`}
+            className="h-full w-full object-contain"
             sizes="(max-width: 768px) 100vw, 50vw"
             priority={i === 0}
           />
