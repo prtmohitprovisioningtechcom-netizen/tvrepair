@@ -72,9 +72,15 @@ export function GallerySlider({ images }: { images: GalleryImage[] }) {
       {/* Track */}
       <div className="relative overflow-hidden">
         {/* Left fade */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 bg-linear-to-r from-[#1a0800] to-transparent" />
+        <div
+          className="pointer-events-none absolute left-0 top-0 z-10 h-full w-16"
+          style={{ background: "linear-gradient(to right, #1a0800, transparent)" }}
+        />
         {/* Right fade */}
-        <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-linear-to-l from-[#1a0800] to-transparent" />
+        <div
+          className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16"
+          style={{ background: "linear-gradient(to left, #1a0800, transparent)" }}
+        />
 
         <div
           ref={trackRef}
@@ -95,7 +101,10 @@ export function GallerySlider({ images }: { images: GalleryImage[] }) {
                 loading="lazy"
               />
               {img.caption && (
-                  <div className="absolute bottom-0 inset-x-0 bg-linear-to-t from-black/80 to-transparent p-2 pt-4 opacity-0 group-hover:opacity-100 transition">
+                  <div
+                    className="absolute bottom-0 inset-x-0 p-2 pt-4 opacity-0 transition group-hover:opacity-100"
+                    style={{ background: "linear-gradient(to top, rgb(0 0 0 / 80%), transparent)" }}
+                  >
                   <p className="text-xs text-white/90 truncate">{img.caption}</p>
                 </div>
               )}
