@@ -70,7 +70,7 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
         <div className="page-hero-mesh pointer-events-none absolute inset-0" />
         <div className={`container-wide relative z-10 grid min-w-0 items-center gap-5 py-8 sm:gap-8 sm:py-10 md:gap-10 lg:gap-12 lg:py-16 ${image ? "md:grid-cols-2" : ""} ${c.showBookingForm ? "pb-12 sm:pb-16 lg:pb-24" : ""}`}>
           <div className="min-w-0">
-            <p className="eyebrow">{str("eyebrow", "Doorstep TV Repair")}</p>
+            <p className="eyebrow text-white">{str("eyebrow", "Doorstep TV Repair")}</p>
             <h1 className="mt-2 max-w-xl wrap-break-word font-display text-[1.75rem] leading-snug sm:mt-4 sm:text-[2.15rem] md:text-5xl lg:text-[3.2rem]">
               {str("heading")}
             </h1>
@@ -158,7 +158,9 @@ function Section({ section, extras }: { section: PageSection; extras: RendererEx
 
   if (section.type === "services_grid") {
     const limit = Number(c.limit || 6);
-    const services = extras.services.slice(0, limit);
+    const requestedService = extras.services.find((service) => service.slug === "led-tv-repair-near-me");
+    const otherServices = extras.services.filter((service) => service.slug !== "led-tv-repair-near-me");
+    const services = [requestedService, ...otherServices].filter(Boolean).slice(0, limit) as Service[];
     return (
       <section className="section-pad bg-navy text-white">
         <div className="container-wide">
