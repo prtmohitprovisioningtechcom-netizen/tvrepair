@@ -105,7 +105,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           </>
         ) : null}
       </head>
-      <body className="min-h-full flex flex-col bg-paper text-ink">
+      <body className="min-h-full flex flex-col bg-paper text-ink overflow-x-hidden">
         {children}
         <ToastViewport />
         <BookingModal />

@@ -9,6 +9,8 @@ import { GallerySlider } from "@/components/website/GallerySlider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { query } from "@/lib/db/query";
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const [page, site] = await Promise.all([getHomepage(), getSiteContext()]);

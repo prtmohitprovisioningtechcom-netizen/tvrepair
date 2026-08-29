@@ -7,6 +7,8 @@ import { PageRenderer } from "@/components/website/PageRenderer";
 import { Breadcrumb } from "@/components/seo/Breadcrumb";
 import { buildMetadata } from "@/lib/seo/metadata";
 
+export const revalidate = 60;
+
 const RESERVED = new Set([
   "about",
   "services",
